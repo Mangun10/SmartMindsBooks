@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SmartMinds - Admin Panel</title>
+  <style>
+    body {
+      font-family: 'Inter', Arial, sans-serif;
+      margin: 0;
+      background: #0f172a;
+      color: #e2e8f0;
+      line-height: 1.6;
+    }
+    .navbar {
+      background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+      color: #f1f5f9;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+      border-bottom: 1px solid #334155;
+    }
+    .navbar h1 {
+      margin: 0;
+      background: linear-gradient(135deg, #60a5fa 0%, #34d399 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: 700;
+    }
+    .logout-btn {
+      background: #ef4444;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    .tabs {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      border-bottom: 1px solid #334155;
+    }
+    .tab {
+      background: none;
+      border: none;
+      color: #94a3b8;
+      padding: 1rem 1.5rem;
+      cursor: pointer;
+      font-weight: 500;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s ease;
+    }
+    .tab.active {
+      color: #60a5fa;
+      border-bottom-color: #60a5fa;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    .form-container {
+      background: linear-gradient(145deg, #1e293b 0%, #334155 100%);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      border: 1px solid #475569;
+    }
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #cbd5e1;
+      font-weight: 500;
+    }
+    .form-group input, .form-group textarea, .form-group select {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid #475569;
+      border-radius: 8px;
+      background: #0f172a;
+      color: #e2e8f0;
+      font-size: 1rem;
+      transition: all 0.2s ease;
+      box-sizing: border-box;
+    }
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+      outline: none;
+      border-color: #60a5fa;
+      box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+    }
+    .form-group textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .checkbox-group {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+    .checkbox-group label {
+      margin-bottom: 0;
+    }
+    .submit-btn {
+      background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.75rem 2rem;
+      font-size: 1rem;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+    .submit-btn:hover {
+      background: linear-gradient(135deg, #047857 0%, #059669 100%);
+      transform: translateY(-1px);
+    }
+    .books-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+    .book-card {
+      background: linear-gradient(145deg, #1e293b 0%, #334155 100%);
+      border-radius: 12px;
+      padding: 1.5rem;
+      border: 1px solid #475569;
+      transition: all 0.2s ease;
+    }
+    .book-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+    }
+    .book-image {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+    .book-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #f1f5f9;
+      margin-bottom: 0.5rem;
+    }
+    .book-price {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #34d399;
+      margin-bottom: 1rem;
+    }
+    .book-actions {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .action-btn {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 0.9rem;
+      transition: all 0.2s ease;
+    }
+    .edit-btn {
+      background: #3b82f6;
+      color: white;
+    }
+    .delete-btn {
+      background: #ef4444;
+      color: white;
+    }
+    .stock-btn {
+      background: #f59e0b;
+      color: white;
+    }
+    .stock-btn.in-stock {
+      background: #10b981;
+    }
+    .success-message, .error-message {
+      padding: 1rem;
+      border-radius: 6px;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+    .success-message {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #10b981;
+    }
+    .error-message {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #ef4444;
+    }
+    .loading {
+      text-align: center;
+      padding: 2rem;
+      color: #94a3b8;
+    }
+    @media (max-width: 768px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+      .books-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <h1>📚 SmartMinds Admin Panel</h1>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </div>
+
+  <div class="container">
+    <div class="tabs">
+      <button class="tab active" onclick="showTab('add-book')">Add New Book</button>
+      <button class="tab" onclick="showTab('manage-books')">Manage Books</button>
+    </div>
+
+    <!-- Add Book Tab -->
+    <div id="add-book" class="tab-content active">
+      <div class="form-container">
+        <h2>Add New Book</h2>
+        <div id="addBookMessage"></div>
+        <form id="addBookForm" enctype="multipart/form-data">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="title">Book Title *</label>
+              <input type="text" id="title" name="title" required>
+            </div>
+            <div class="form-group">
+              <label for="author">Author *</label>
+              <input type="text" id="author" name="author" required>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="description">Description *</label>
+            <textarea id="description" name="description" required></textarea>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="category">Category *</label>
+              <select id="category" name="category" required>
+                <option value="">Select Category</option>
+                <option value="math">📐 Mathematics</option>
+                <option value="science">🔬 Science</option>
+                <option value="programming">💻 Programming</option>
+                <option value="literature">📖 Literature</option>
+                <option value="history">🌍 History</option>
+                <option value="arts">🎨 Arts</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="price">Price (₹) *</label>
+              <input type="number" id="price" name="price" min="0" required>
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="isbn">ISBN (Optional)</label>
+              <input type="text" id="isbn" name="isbn">
+            </div>
+            <div class="form-group">
+              <label for="stock">Stock Quantity *</label>
+              <input type="number" id="stock" name="stock" min="0" value="0" required>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="tags">Tags (comma separated)</label>
+            <input type="text" id="tags" name="tags" placeholder="e.g., algebra, mathematics, high-school">
+          </div>
+          
+          <div class="form-group">
+            <label for="image">Book Cover Image *</label>
+            <input type="file" id="image" name="image" accept="image/*" required>
+          </div>
+          
+          <div class="checkbox-group">
+            <label>
+              <input type="checkbox" id="inStock" name="inStock" checked> In Stock
+            </label>
+            <label>
+              <input type="checkbox" id="featured" name="featured"> Featured Book
+            </label>
+          </div>
+          
+          <button type="submit" class="submit-btn">Add Book</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Manage Books Tab -->
+    <div id="manage-books" class="tab-content">
+      <div class="form-container">
+        <h2>Manage Books</h2>
+        <button class="submit-btn" onclick="loadBooks()">Refresh Books</button>
+      </div>
+      <div id="manageBooksMessage"></div>
+      <div id="booksContainer" class="loading">Loading books...</div>
+    </div>
+  </div>
+
+  <script>
+    let currentBooks = [];
+    const token = localStorage.getItem('adminToken');
+
+    // Check authentication
+    if (!token) {
+      window.location.href = '/admin-login.html';
+    }
+
+    // Tab functionality
+    function showTab(tabName) {
+      document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+      
+      document.querySelector(`[onclick="showTab('${tabName}')"]`).classList.add('active');
+      document.getElementById(tabName).classList.add('active');
+      
+      if (tabName === 'manage-books') {
+        loadBooks();
+      }
+    }
+
+    // Show message function
+    function showMessage(elementId, message, isError = false) {
+      const element = document.getElementById(elementId);
+      element.innerHTML = `<div class="${isError ? 'error-message' : 'success-message'}">${message}</div>`;
+      setTimeout(() => {
+        element.innerHTML = '';
+      }, 5000);
+    }
+
+    // Add book form submission
+    document.getElementById('addBookForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const formData = new FormData(e.target);
+      
+      try {
+        const response = await fetch('/api/admin/books', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
+          body: formData
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          showMessage('addBookMessage', 'Book added successfully!');
+          e.target.reset();
+        } else {
+          showMessage('addBookMessage', data.message || 'Error adding book', true);
+        }
+      } catch (error) {
+        showMessage('addBookMessage', 'Error adding book. Please try again.', true);
+      }
+    });
+
+    // Load books for management
+    async function loadBooks() {
+      const container = document.getElementById('booksContainer');
+      container.innerHTML = '<div class="loading">Loading books...</div>';
+      
+      try {
+        const response = await fetch('/api/admin/books', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        const books = await response.json();
+        currentBooks = books;
+        
+        if (books.length === 0) {
+          container.innerHTML = '<div class="loading">No books found.</div>';
+          return;
+        }
+        
+        container.innerHTML = `
+          <div class="books-grid">
+            ${books.map(book => `
+              <div class="book-card">
+                <img src="${book.images.cover || '/placeholder.jpg'}" alt="${book.title}" class="book-image" onerror="this.src='/placeholder.jpg'">
+                <div class="book-title">${book.title}</div>
+                <div>Author: ${book.author}</div>
+                <div>Category: ${getCategoryName(book.category)}</div>
+                <div class="book-price">₹${book.price.toLocaleString('en-IN')}</div>
+                <div>Stock: ${book.stock}</div>
+                <div>Status: ${book.inStock ? '✅ In Stock' : '❌ Sold Out'}</div>
+                <div class="book-actions">
+                  <button class="action-btn stock-btn ${book.inStock ? 'in-stock' : ''}" 
+                          onclick="toggleStock('${book._id}')">
+                    ${book.inStock ? 'Mark Sold Out' : 'Mark In Stock'}
+                  </button>
+                  <button class="action-btn delete-btn" onclick="deleteBook('${book._id}')">
+                    Delete
+                  </button>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      } catch (error) {
+        container.innerHTML = '<div class="loading">Error loading books.</div>';
+      }
+    }
+
+    // Toggle stock status
+    async function toggleStock(bookId) {
+      try {
+        const response = await fetch(`/api/admin/books/${bookId}/toggle-stock`, {
+          method: 'PATCH',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          showMessage('manageBooksMessage', data.message);
+          loadBooks();
+        } else {
+          showMessage('manageBooksMessage', data.message || 'Error updating stock status', true);
+        }
+      } catch (error) {
+        showMessage('manageBooksMessage', 'Error updating stock status', true);
+      }
+    }
+
+    // Delete book
+    async function deleteBook(bookId) {
+      if (!confirm('Are you sure you want to delete this book?')) {
+        return;
+      }
+      
+      try {
+        const response = await fetch(`/api/admin/books/${bookId}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          showMessage('manageBooksMessage', 'Book deleted successfully');
+          loadBooks();
+        } else {
+          showMessage('manageBooksMessage', data.message || 'Error deleting book', true);
+        }
+      } catch (error) {
+        showMessage('manageBooksMessage', 'Error deleting book', true);
+      }
+    }
+
+    // Helper function to get category name
+    function getCategoryName(category) {
+      const names = {
+        math: '📐 Mathematics',
+        science: '🔬 Science',
+        programming: '💻 Programming',
+        literature: '📖 Literature',
+        history: '🌍 History',
+        arts: '🎨 Arts'
+      };
+      return names[category] || category;
+    }
+
+    // Logout function
+    function logout() {
+      localStorage.removeItem('adminToken');
+      window.location.href = '/admin-login.html';
+    }
+
+    // Load books on page load
+    loadBooks();
+  </script>
+</body>
+</html>

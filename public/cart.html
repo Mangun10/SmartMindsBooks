@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SmartMinds Educational E-commerce - Shopping Cart</title>
+  <link href="https://fonts.googleapis.com/css?family=Inter:400,500,600,700&display=swap" rel="stylesheet"/>
+  <style>
+    body {
+      font-family: 'Inter', Arial, sans-serif;
+      margin: 0;
+      background: #0f172a;
+      color: #e2e8f0;
+      line-height: 1.6;
+    }
+    .navbar {
+      background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+      color: #f1f5f9;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+      border-bottom: 1px solid #334155;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .navbar h1 { 
+      font-size: 1.8rem; 
+      margin: 0;
+      background: linear-gradient(135deg, #60a5fa 0%, #34d399 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: 700;
+    }
+    .navbar nav a {
+      color: #cbd5e1;
+      margin-left: 2rem;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+    }
+    .navbar nav a:hover, .navbar nav a.active { 
+      color: #60a5fa;
+      background: rgba(96, 165, 250, 0.1);
+    }
+    .cart-badge {
+      background: #ef4444;
+      color: white;
+      border-radius: 50%;
+      padding: 0.2rem 0.5rem;
+      font-size: 0.8rem;
+      font-weight: bold;
+      margin-left: 0.5rem;
+    }
+
+    .container { max-width: 1000px; margin: 2rem auto; padding: 0 1.5rem; }
+    
+    .page-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #f1f5f9;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    .cart-container {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .cart-items {
+      background: linear-gradient(145deg, #1e293b 0%, #334155 100%);
+      border-radius: 16px;
+      padding: 2rem;
+      border: 1px solid #475569;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+    }
+
+    .cart-items h3 {
+      margin-top: 0;
+      color: #f1f5f9;
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .cart-item {
+      display: flex;
+      align-items: center;
+      padding: 1.5rem 0;
+      border-bottom: 1px solid #475569;
+      transition: all 0.2s ease;
+    }
+    .cart-item:last-child {
+      border-bottom: none;
+    }
+    .cart-item:hover {
+      background: rgba(96, 165, 250, 0.05);
+      border-radius: 8px;
+      margin: 0 -1rem;
+      padding: 1.5rem 1rem;
+    }
+
+    .item-image {
+      width: 80px;
+      height: 100px;
+      border-radius: 8px;
+      object-fit: cover;
+      margin-right: 1rem;
+      flex-shrink: 0;
+    }
+
+    .item-details {
+      flex: 1;
+      margin-right: 1rem;
+    }
+    .item-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #f1f5f9;
+      margin-bottom: 0.5rem;
+    }
+    .item-price {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #34d399;
+      margin-bottom: 0.5rem;
+    }
+    .item-total {
+      font-size: 0.9rem;
+      color: #94a3b8;
+    }
+
+    .quantity-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-right: 1rem;
+      flex-shrink: 0;
+    }
+    .quantity-btn {
+      background: #475569;
+      color: #e2e8f0;
+      border: none;
+      border-radius: 6px;
+      width: 32px;
+      height: 32px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .quantity-btn:hover {
+      background: #60a5fa;
+    }
+    .quantity-display {
+      background: #0f172a;
+      border: 1px solid #475569;
+      border-radius: 6px;
+      padding: 0.5rem;
+      min-width: 60px;
+      text-align: center;
+      color: #f1f5f9;
+      font-weight: 600;
+    }
+
+    .remove-btn {
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: 8px;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+    .remove-btn:hover {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: #ef4444;
+      transform: scale(1.05);
+    }
+
+    .cart-summary {
+      background: linear-gradient(145deg, #1e293b 0%, #334155 100%);
+      border-radius: 16px;
+      padding: 2rem;
+      border: 1px solid #475569;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+      height: fit-content;
+      position: sticky;
+      top: 120px;
+    }
+    .summary-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #f1f5f9;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      font-size: 1.1rem;
+    }
+    .summary-row.total {
+      border-top: 2px solid #475569;
+      padding-top: 1rem;
+      margin-top: 1.5rem;
+      font-weight: 700;
+      font-size: 1.3rem;
+      color: #34d399;
+    }
+
+    .checkout-btn {
+      background: linear-gradient(135deg, #059669 0%, #10b981 50%, #34d399 100%);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 1rem 2rem;
+      font-size: 1.1rem;
+      cursor: pointer;
+      font-weight: 700;
+      margin-top: 1.5rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      width: 100%;
+    }
+    .checkout-btn:hover { 
+      background: linear-gradient(135deg, #047857 0%, #059669 50%, #10b981 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+    }
+    .checkout-btn:disabled {
+      background: #6b7280;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .continue-shopping {
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      cursor: pointer;
+      font-weight: 600;
+      margin-top: 1rem;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      display: inline-block;
+      text-align: center;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .continue-shopping:hover {
+      background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+      transform: translateY(-1px);
+    }
+
+    .empty-cart {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: #94a3b8;
+    }
+    .empty-cart h3 {
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+      color: #cbd5e1;
+    }
+
+    .cart-actions {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .clear-cart-btn {
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: 8px;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      font-size: 0.9rem;
+    }
+    .clear-cart-btn:hover {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: #ef4444;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 2rem;
+      color: #94a3b8;
+    }
+
+    .success-message, .error-message {
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+    .success-message {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #10b981;
+    }
+    .error-message {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #ef4444;
+    }
+
+    @media (max-width: 768px) {
+      .cart-container {
+        grid-template-columns: 1fr;
+      }
+      .cart-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+      .item-details {
+        margin-right: 0;
+        width: 100%;
+      }
+      .quantity-controls {
+        margin-right: 0;
+      }
+      .navbar { flex-direction: column; gap: 1rem; }
+      .navbar nav { display: flex; gap: 1rem; }
+      .navbar nav a { margin-left: 0; }
+      .cart-actions {
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <h1>📚 SmartMinds</h1>
+    <nav>
+      <a href="index.html">🏠 Home</a>
+      <a href="products.html">📖 Products</a>
+      <a href="cart.html" class="active">🛒 Cart <span class="cart-badge" id="cartCount">0</span></a>
+    </nav>
+  </div>
+
+  <div class="container">
+    <h1 class="page-title">🛒 Your Shopping Cart</h1>
+    
+    <div id="messageContainer"></div>
+    
+    <div id="cartContent">
+      <div class="loading">Loading cart...</div>
+    </div>
+  </div>
+
+  <script>
+    let cart = JSON.parse(localStorage.getItem('smartminds_cart')) || [];
+    let booksData = {}; // Store book details fetched from API
+
+    function updateCartCount() {
+      document.getElementById('cartCount').textContent = cart.reduce((sum, item) => sum + item.quantity, 0);
+    }
+
+    function showMessage(message, isError = false) {
+      const container = document.getElementById('messageContainer');
+      container.innerHTML = `<div class="${isError ? 'error-message' : 'success-message'}">${message}</div>`;
+      setTimeout(() => {
+        container.innerHTML = '';
+      }, 3000);
+    }
+
+    // Fetch book details from API
+    async function fetchBookDetails(bookId) {
+      if (booksData[bookId]) {
+        return booksData[bookId];
+      }
+
+      try {
+        const response = await fetch(`/api/books/${bookId}`);
+        if (response.ok) {
+          const book = await response.json();
+          booksData[bookId] = book;
+          return book;
+        }
+      } catch (error) {
+        console.error('Error fetching book details:', error);
+      }
+      
+      return null;
+    }
+
+    function updateQuantity(bookId, change) {
+      const item = cart.find(item => item._id === bookId);
+      if (item) {
+        item.quantity += change;
+        if (item.quantity <= 0) {
+          removeFromCart(bookId);
+        } else {
+          localStorage.setItem('smartminds_cart', JSON.stringify(cart));
+          renderCart();
+          updateCartCount();
+        }
+      }
+    }
+
+    function removeFromCart(bookId) {
+      cart = cart.filter(item => item._id !== bookId);
+      localStorage.setItem('smartminds_cart', JSON.stringify(cart));
+      renderCart();
+      updateCartCount();
+      showMessage('Item removed from cart');
+    }
+
+    function clearCart() {
+      if (confirm('Are you sure you want to clear your entire cart?')) {
+        cart = [];
+        localStorage.setItem('smartminds_cart', JSON.stringify(cart));
+        renderCart();
+        updateCartCount();
+        showMessage('Cart cleared');
+      }
+    }
+
+    function calculateSubtotal() {
+      return cart.reduce((total, item) => {
+        const book = booksData[item._id];
+        const price = book ? book.price : item.price; // Fallback to stored price
+        return total + (price * item.quantity);
+      }, 0);
+    }
+
+    function calculateTax(subtotal) {
+      return subtotal * 0.18; // 18% GST
+    }
+
+    function calculateShipping(subtotal) {
+      return subtotal > 500 ? 0 : 50; // Free shipping above ₹500
+    }
+
+    async function renderCart() {
+      const cartContent = document.getElementById('cartContent');
+      
+      if (cart.length === 0) {
+        cartContent.innerHTML = `
+          <div class="empty-cart">
+            <h3>📭 Your cart is empty</h3>
+            <p>Looks like you haven't added any books to your cart yet.</p>
+            <a href="products.html" class="continue-shopping">🔍 Browse Our Books</a>
+          </div>
+        `;
+        return;
+      }
+
+      // Show loading while fetching book details
+      cartContent.innerHTML = '<div class="loading">Loading cart items...</div>';
+
+      // Fetch details for all books in cart
+      const bookPromises = cart.map(item => fetchBookDetails(item._id));
+      await Promise.all(bookPromises);
+
+      // Check for any unavailable books
+      const unavailableItems = cart.filter(item => !booksData[item._id]);
+      if (unavailableItems.length > 0) {
+        showMessage(`${unavailableItems.length} item(s) are no longer available and will be removed from your cart.`, true);
+        // Remove unavailable items
+        cart = cart.filter(item => booksData[item._id]);
+        localStorage.setItem('smartminds_cart', JSON.stringify(cart));
+      }
+
+      if (cart.length === 0) {
+        cartContent.innerHTML = `
+          <div class="empty-cart">
+            <h3>📭 Cart is now empty</h3>
+            <p>Some items were removed as they are no longer available.</p>
+            <a href="products.html" class="continue-shopping">🔍 Browse Our Books</a>
+          </div>
+        `;
+        return;
+      }
+
+      const subtotal = calculateSubtotal();
+      const tax = calculateTax(subtotal);
+      const shipping = calculateShipping(subtotal);
+      const total = subtotal + tax + shipping;
+
+      cartContent.innerHTML = `
+        <div class="cart-container">
+          <div class="cart-items">
+            <h3>Cart Items (${cart.length})</h3>
+            <div class="cart-actions">
+              <button class="clear-cart-btn" onclick="clearCart()">🗑️ Clear Cart</button>
+            </div>
+            ${cart.map(item => {
+              const book = booksData[item._id];
+              if (!book) return '';
+              
+              return `
+                <div class="cart-item">
+                  <img src="${book.images.cover || '/placeholder.jpg'}" alt="${book.title}" class="item-image" onerror="this.src='/placeholder.jpg'">
+                  <div class="item-details">
+                    <div class="item-title">${book.title}</div>
+                    <div class="item-price">₹${book.price.toLocaleString('en-IN')} each</div>
+                    <div class="item-total">Total: ₹${(book.price * item.quantity).toLocaleString('en-IN')}</div>
+                    ${!book.inStock ? '<div style="color: #ef4444; font-size: 0.9rem;">⚠️ Currently out of stock</div>' : ''}
+                  </div>
+                  <div class="quantity-controls">
+                    <button class="quantity-btn" onclick="updateQuantity('${item._id}', -1)">−</button>
+                    <div class="quantity-display">${item.quantity}</div>
+                    <button class="quantity-btn" onclick="updateQuantity('${item._id}', 1)">+</button>
+                  </div>
+                  <button class="remove-btn" onclick="removeFromCart('${item._id}')">🗑️ Remove</button>
+                </div>
+              `;
+            }).join('')}
+          </div>
+          
+          <div class="cart-summary">
+            <h3 class="summary-title">📋 Order Summary</h3>
+            <div class="summary-row">
+              <span>Subtotal (${cart.reduce((sum, item) => sum + item.quantity, 0)} items):</span>
+              <span>₹${subtotal.toLocaleString('en-IN')}</span>
+            </div>
+            <div class="summary-row">
+              <span>GST (18%):</span>
+              <span>₹${Math.round(tax).toLocaleString('en-IN')}</span>
+            </div>
+            <div class="summary-row">
+              <span>Shipping:</span>
+              <span>${shipping === 0 ? 'Free' : '₹' + shipping.toLocaleString('en-IN')}</span>
+            </div>
+            ${shipping === 0 ? '' : '<div style="font-size: 0.85rem; color: #94a3b8; margin-bottom: 0.5rem;">Free shipping on orders above ₹500</div>'}
+            <div class="summary-row total">
+              <span>Total:</span>
+              <span>₹${Math.round(total).toLocaleString('en-IN')}</span>
+            </div>
+            <button class="checkout-btn" onclick="proceedToCheckout()" ${cart.some(item => !booksData[item._id]?.inStock) ? 'disabled' : ''}>
+              ${cart.some(item => !booksData[item._id]?.inStock) ? '⚠️ Some items out of stock' : '🚀 Proceed to Checkout'}
+            </button>
+            <a href="products.html" class="continue-shopping">
+              ← Continue Shopping
+            </a>
+          </div>
+        </div>
+      `;
+    }
+
+    function proceedToCheckout() {
+      // Check if all items are in stock
+      const outOfStockItems = cart.filter(item => !booksData[item._id]?.inStock);
+      if (outOfStockItems.length > 0) {
+        const titles = outOfStockItems.map(item => booksData[item._id]?.title || 'Unknown').join(', ');
+        showMessage(`Cannot proceed: ${titles} ${outOfStockItems.length === 1 ? 'is' : 'are'} out of stock`, true);
+        return;
+      }
+
+      if (cart.length === 0) {
+        showMessage('Your cart is empty!', true);
+        return;
+      }
+      
+      const total = calculateSubtotal() + calculateTax(calculateSubtotal()) + calculateShipping(calculateSubtotal());
+      
+      // In a real application, this would redirect to a checkout page with payment integration
+      showMessage(`Proceeding to checkout with ${cart.length} item(s). Total: ₹${Math.round(total).toLocaleString('en-IN')}`);
+      
+      // For demo purposes, we'll clear the cart after confirmation
+      setTimeout(() => {
+        if (confirm('Complete purchase? (This will clear your cart for demo purposes)')) {
+          cart = [];
+          localStorage.setItem('smartminds_cart', JSON.stringify(cart));
+          renderCart();
+          updateCartCount();
+          showMessage('🎉 Thank you for your purchase! Your order has been placed successfully.');
+        }
+      }, 1000);
+    }
+
+    // Initialize cart
+    updateCartCount();
+    renderCart();
+
+    // Auto-refresh cart data every 30 seconds to check stock status
+    setInterval(async () => {
+      if (cart.length > 0) {
+        // Clear cached data and re-fetch
+        booksData = {};
+        await renderCart();
+      }
+    }, 30000);
+  </script>
+</body>
+</html>

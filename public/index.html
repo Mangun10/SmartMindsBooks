@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SmartMinds Educational E-commerce - Home</title>
+  <link href="https://fonts.googleapis.com/css?family=Inter:400,500,600,700&display=swap" rel="stylesheet"/>
+  <style>
+    /* Previous CSS styles remain the same */
+    body {
+      font-family: 'Inter', Arial, sans-serif;
+      margin: 0;
+      background: #0f172a;
+      color: #e2e8f0;
+      line-height: 1.6;
+    }
+    .navbar {
+      background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+      color: #f1f5f9;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+      border-bottom: 1px solid #334155;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .navbar h1 { 
+      font-size: 1.8rem; 
+      margin: 0;
+      background: linear-gradient(135deg, #60a5fa 0%, #34d399 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: 700;
+    }
+    .navbar nav a {
+      color: #cbd5e1;
+      margin-left: 2rem;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+    }
+    .navbar nav a:hover, .navbar nav a.active { 
+      color: #60a5fa;
+      background: rgba(96, 165, 250, 0.1);
+    }
+    .cart-badge {
+      background: #ef4444;
+      color: white;
+      border-radius: 50%;
+      padding: 0.2rem 0.5rem;
+      font-size: 0.8rem;
+      font-weight: bold;
+      margin-left: 0.5rem;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%);
+      padding: 4rem 2rem;
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    .hero h2 {
+      font-size: 3rem;
+      margin: 0 0 1rem 0;
+      background: linear-gradient(135deg, #60a5fa 0%, #34d399 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero p {
+      font-size: 1.2rem;
+      color: #cbd5e1;
+      max-width: 600px;
+      margin: 0 auto 2rem auto;
+    }
+    .cta-button {
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 1rem 2rem;
+      font-size: 1.1rem;
+      cursor: pointer;
+      font-weight: 700;
+      text-decoration: none;
+      display: inline-block;
+      transition: all 0.3s ease;
+      box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3);
+    }
+    .cta-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+    }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+    
+    .section-title {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #f1f5f9;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    .categories {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 4rem;
+    }
+    .category-card {
+      background: linear-gradient(145deg, #1e293b 0%, #334155 100%);
+      border-radius: 12px;
+      padding: 2rem 1rem;
+      text-align: center;
+      transition: all 0.3s ease;
+      border: 1px solid #475569;
+      cursor: pointer;
+    }
+    .category-card:hover {
+      transform: translateY(-5px);
+      border-color: #60a5fa;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+    .category-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+    .category-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #f1f5f9;
+      margin-bottom: 0.5rem;
+    }
+    .category-desc {
+      font-size: 0.9rem;
+      color: #94a3b8;
+    }
+
+    .featured-products {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+      margin-bottom: 4rem;
+    }
+    .product-card {
+      background: linear-gradient(145deg, #1e293b 0%, #334155 100%);
+      border-radius: 16px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+      padding: 1.5rem;
+      transition: all 0.3s ease;
+      border: 1px solid #475569;
+      position: relative;
+      overflow: hidden;
+    }
+    .product-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #60a5fa 0%, #34d399 50%, #f59e0b 100%);
+    }
+    .product-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+      border-color: #60a5fa;
+    }
+    .product-card img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 12px;
+      margin-bottom: 1rem;
+    }
+    .product-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin: 0.5rem 0 0.3rem 0;
+      color: #f1f5f9;
+    }
+    .product-desc {
+      font-size: 0.95rem;
+      color: #94a3b8;
+      margin-bottom: 1rem;
+    }
+    .product-price {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #34d399;
+      margin-bottom: 1rem;
+    }
+    .product-action {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .add-to-cart-btn {
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 14px rgba(59, 130, 246, 0.3);
+    }
+    .add-to-cart-btn:hover { 
+      background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+      transform: translateY(-2px);
+    }
+    .add-to-cart-btn:disabled {
+      background: #6b7280;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .rating {
+      color: #fbbf24;
+      font-size: 1.1rem;
+    }
+    .out-of-stock {
+      opacity: 0.6;
+    }
+    .stock-badge {
+      background: #ef4444;
+      color: white;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    .loading {
+      text-align: center;
+      padding: 2rem;
+      color: #94a3b8;
+    }
+
+    @media (max-width: 768px) {
+      .hero h2 { font-size: 2rem; }
+      .hero p { font-size: 1rem; }
+      .navbar { flex-direction: column; gap: 1rem; }
+      .navbar nav { display: flex; gap: 1rem; }
+      .navbar nav a { margin-left: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <h1>📚 SmartMinds</h1>
+    <nav>
+      <a href="index.html" class="active">🏠 Home</a>
+      <a href="products.html">📖 Products</a>
+      <a href="cart.html">🛒 Cart <span class="cart-badge" id="cartCount">0</span></a>
+    </nav>
+  </div>
+
+  <div class="hero">
+    <h2>Unlock Your Learning Potential</h2>
+    <p>Discover thousands of educational books to enhance your knowledge and skills. From mathematics to programming, we have everything you need for your educational journey.</p>
+    <a href="products.html" class="cta-button">🚀 Browse All Books</a>
+  </div>
+
+  <div class="container">
+    <h3 class="section-title">📚 Browse by Category</h3>
+    <div class="categories">
+      <div class="category-card" onclick="goToCategory('math')">
+        <div class="category-icon">📐</div>
+        <div class="category-title">Mathematics</div>
+        <div class="category-desc">Algebra, Calculus, Geometry & more</div>
+      </div>
+      <div class="category-card" onclick="goToCategory('science')">
+        <div class="category-icon">🔬</div>
+        <div class="category-title">Science</div>
+        <div class="category-desc">Physics, Chemistry, Biology</div>
+      </div>
+      <div class="category-card" onclick="goToCategory('programming')">
+        <div class="category-icon">💻</div>
+        <div class="category-title">Programming</div>
+        <div class="category-desc">Python, JavaScript, Web Development</div>
+      </div>
+      <div class="category-card" onclick="goToCategory('literature')">
+        <div class="category-icon">📖</div>
+        <div class="category-title">Literature</div>
+        <div class="category-desc">Classic & Modern Literature</div>
+      </div>
+      <div class="category-card" onclick="goToCategory('history')">
+        <div class="category-icon">🌍</div>
+        <div class="category-title">History</div>
+        <div class="category-desc">World History & Civilizations</div>
+      </div>
+      <div class="category-card" onclick="goToCategory('arts')">
+        <div class="category-icon">🎨</div>
+        <div class="category-title">Arts</div>
+        <div class="category-desc">Fine Arts, Design, Music Theory</div>
+      </div>
+    </div>
+
+    <h3 class="section-title">⭐ Featured Books</h3>
+    <div id="featuredProducts" class="featured-products">
+      <div class="loading">Loading featured books...</div>
+    </div>
+  </div>
+
+  <script>
+    let cart = JSON.parse(localStorage.getItem('smartminds_cart')) || [];
+    
+    function updateCartCount() {
+      document.getElementById('cartCount').textContent = cart.reduce((sum, item) => sum + item.quantity, 0);
+    }
+    
+    function addToCart(book) {
+      if (!book.inStock) {
+        alert('This book is currently out of stock');
+        return;
+      }
+      
+      const existingItem = cart.find(item => item._id === book._id);
+      if (existingItem) {
+        existingItem.quantity += 1;
+      } else {
+        cart.push({
+          _id: book._id,
+          title: book.title,
+          price: book.price,
+          image: book.images.cover,
+          quantity: 1
+        });
+      }
+      localStorage.setItem('smartminds_cart', JSON.stringify(cart));
+      updateCartCount();
+      
+      alert(`"${book.title}" added to cart!`);
+    }
+    
+    function goToCategory(category) {
+      window.location.href = `products.html?category=${category}`;
+    }
+    
+    // Load featured books from API or show sample books
+    async function loadFeaturedBooks() {
+      try {
+        const response = await fetch('/api/books/featured/list');
+        const books = await response.json();
+        
+        const container = document.getElementById('featuredProducts');
+        
+        if (books.length === 0) {
+          container.innerHTML = '<div class="loading">No featured books available</div>';
+          return;
+        }
+        
+        container.innerHTML = books.map(book => `
+          <div class="product-card ${!book.inStock ? 'out-of-stock' : ''}">
+            <img src="${book.images.cover || '/placeholder.jpg'}" alt="${book.title}" onerror="this.src='/placeholder.jpg'"/>
+            <div class="product-title">${book.title}</div>
+            <div class="product-desc">${book.description}</div>
+            <div class="product-price">₹${book.price.toLocaleString('en-IN')}</div>
+            <div class="product-action">
+              <span class="rating">⭐⭐⭐⭐⭐</span>
+              ${!book.inStock ? 
+                '<span class="stock-badge">Out of Stock</span>' : 
+                `<button class="add-to-cart-btn" onclick="addToCart(${JSON.stringify(book).replace(/"/g, '&quot;')})">Add to Cart</button>`
+              }
+            </div>
+          </div>
+        `).join('');
+        
+      } catch (error) {
+        console.error('Error loading featured books:', error);
+        // Show sample books when API is not available (for static HTML preview)
+        showSampleBooks();
+      }
+    }
+    
+    // Show sample books for static HTML preview
+    function showSampleBooks() {
+      const sampleBooks = [
+        {
+          _id: '1',
+          title: 'Advanced Mathematics',
+          description: 'Comprehensive guide to calculus and algebra',
+          price: 899,
+          images: { cover: 'https://via.placeholder.com/200x250/3b82f6/ffffff?text=Math+Book' },
+          inStock: true
+        },
+        {
+          _id: '2', 
+          title: 'Physics Fundamentals',
+          description: 'Essential concepts in modern physics',
+          price: 799,
+          images: { cover: 'https://via.placeholder.com/200x250/10b981/ffffff?text=Physics+Book' },
+          inStock: true
+        },
+        {
+          _id: '3',
+          title: 'JavaScript Mastery',
+          description: 'From basics to advanced web development',
+          price: 1299,
+          images: { cover: 'https://via.placeholder.com/200x250/f59e0b/ffffff?text=JS+Book' },
+          inStock: false
+        }
+      ];
+      
+      const container = document.getElementById('featuredProducts');
+      container.innerHTML = sampleBooks.map(book => `
+        <div class="product-card ${!book.inStock ? 'out-of-stock' : ''}">
+          <img src="${book.images.cover}" alt="${book.title}"/>
+          <div class="product-title">${book.title}</div>
+          <div class="product-desc">${book.description}</div>
+          <div class="product-price">₹${book.price.toLocaleString('en-IN')}</div>
+          <div class="product-action">
+            <span class="rating">⭐⭐⭐⭐⭐</span>
+            ${!book.inStock ? 
+              '<span class="stock-badge">Out of Stock</span>' : 
+              `<button class="add-to-cart-btn" onclick="addToCart(${JSON.stringify(book).replace(/"/g, '&quot;')})">Add to Cart</button>`
+            }
+          </div>
+        </div>
+      `).join('');
+    }
+    
+    // Initialize
+    updateCartCount();
+    loadFeaturedBooks();
+  </script>
+</body>
+</html>

@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SmartMinds Educational E-commerce - Products</title>
+  <link href="https://fonts.googleapis.com/css?family=Inter:400,500,600,700&display=swap" rel="stylesheet"/>
+  <style>
+    body {
+      font-family: 'Inter', Arial, sans-serif;
+      margin: 0;
+      background: #0f172a;
+      color: #e2e8f0;
+      line-height: 1.6;
+    }
+    .navbar {
+      background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+      color: #f1f5f9;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+      border-bottom: 1px solid #334155;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .navbar h1 { 
+      font-size: 1.8rem; 
+      margin: 0;
+      background: linear-gradient(135deg, #60a5fa 0%, #34d399 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: 700;
+    }
+    .navbar nav a {
+      color: #cbd5e1;
+      margin-left: 2rem;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+    }
+    .navbar nav a:hover, .navbar nav a.active { 
+      color: #60a5fa;
+      background: rgba(96, 165, 250, 0.1);
+    }
+    .cart-badge {
+      background: #ef4444;
+      color: white;
+      border-radius: 50%;
+      padding: 0.2rem 0.5rem;
+      font-size: 0.8rem;
+      font-weight: bold;
+      margin-left: 0.5rem;
+    }
+
+    .container { max-width: 1200px; margin: 2rem auto; padding: 0 1.5rem; }
+    
+    .page-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #f1f5f9;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    .search-filter-bar {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+      align-items: center;
+      background: #1e293b;
+      padding: 1.5rem;
+      border-radius: 12px;
+      border: 1px solid #334155;
+      flex-wrap: wrap;
+    }
+    .search-filter-bar input, .search-filter-bar select {
+      padding: 0.75rem 1rem;
+      font-size: 1rem;
+      border: 1px solid #475569;
+      border-radius: 8px;
+      outline: none;
+      background: #0f172a;
+      color: #e2e8f0;
+      transition: all 0.2s ease;
+      min-width: 200px;
+    }
+    .search-filter-bar input:focus, .search-filter-bar select:focus {
+      border-color: #60a5fa;
+      box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+    }
+    .search-filter-bar input::placeholder {
+      color: #94a3b8;
+    }
+    .search-btn {
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+      color: #fff;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 14px rgba(59, 130, 246, 0.3);
+    }
+    .search-btn:hover {
+      background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+      transform: translateY(-1px);
+    }
+
+    .results-info {
+      margin-bottom: 1.5rem;
+      color: #94a3b8;
+      text-align: center;
+    }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+    .product-card {
+      background: linear-gradient(145deg, #1e293b 0%, #334155 100%);
+      border-radius: 16px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+      padding: 1.5rem;
+      transition: all 0.3s ease;
+      border: 1px solid #475569;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .product-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #60a5fa 0%, #34d399 50%, #f59e0b 100%);
+    }
+    .product-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+      border-color: #60a5fa;
+    }
+    .product-card.out-of-stock {
+      opacity: 0.7;
+    }
+    .product-card.out-of-stock::before {
+      background: #ef4444;
+    }
+    .product-card img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      border-radius: 12px;
+      margin-bottom: 1rem;
+      transition: transform 0.3s ease;
+    }
+    .product-card:hover img:not(.out-of-stock img) {
+      transform: scale(1.05);
+    }
+    .product-title {
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin: 0.5rem 0 0.3rem 0;
+      color: #f1f5f9;
+    }
+    .product-category {
+      font-size: 0.85rem;
+      color: #60a5fa;
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+    }
+    .product-author {
+      font-size: 0.9rem;
+      color: #94a3b8;
+      margin-bottom: 0.5rem;
+    }
+    .product-desc {
+      font-size: 0.95rem;
+      color: #94a3b8;
+      margin-bottom: 1rem;
+      flex-grow: 1;
+      line-height: 1.5;
+    }
+    .product-price {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #34d399;
+      margin-bottom: 1rem;
+    }
+    .product-stock {
+      font-size: 0.85rem;
+      margin-bottom: 1rem;
+    }
+    .product-stock.in-stock {
+      color: #10b981;
+    }
+    .product-stock.out-of-stock {
+      color: #ef4444;
+      font-weight: 600;
+    }
+    .product-action {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: auto;
+    }
+    .add-to-cart-btn {
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 14px rgba(59, 130, 246, 0.3);
+      flex: 1;
+      margin-left: 1rem;
+    }
+    .add-to-cart-btn:hover:not(:disabled) { 
+      background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+    }
+    .add-to-cart-btn:disabled {
+      background: #6b7280;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    .rating {
+      color: #fbbf24;
+      font-size: 1.1rem;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+    .pagination button {
+      background: #475569;
+      color: #e2e8f0;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .pagination button:hover:not(:disabled) {
+      background: #60a5fa;
+    }
+    .pagination button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .pagination .current-page {
+      background: #60a5fa;
+      font-weight: 600;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: #94a3b8;
+      font-size: 1.2rem;
+    }
+    .no-results {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: #94a3b8;
+    }
+    .no-results h3 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      color: #cbd5e1;
+    }
+
+    @media (max-width: 768px) {
+      .navbar { flex-direction: column; gap: 1rem; }
+      .navbar nav { display: flex; gap: 1rem; }
+      .navbar nav a { margin-left: 0; }
+      .search-filter-bar { flex-direction: column; }
+      .search-filter-bar input, .search-filter-bar select { min-width: 100%; }
+      .products-grid { grid-template-columns: 1fr; }
+      .product-action { flex-direction: column; gap: 1rem; }
+      .add-to-cart-btn { margin-left: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <h1>📚 SmartMinds</h1>
+    <nav>
+      <a href="index.html">🏠 Home</a>
+      <a href="products.html" class="active">📖 Products</a>
+      <a href="cart.html">🛒 Cart <span class="cart-badge" id="cartCount">0</span></a>
+    </nav>
+  </div>
+
+  <div class="container">
+    <h1 class="page-title">📖 Educational Books Catalog</h1>
+    
+    <div class="search-filter-bar">
+      <input type="text" placeholder="Search books by title, author, or subject..." id="searchInput" style="flex: 2;"/>
+      <select id="categoryFilter">
+        <option value="">All Categories</option>
+        <option value="math">📐 Mathematics</option>
+        <option value="science">🔬 Science</option>
+        <option value="programming">💻 Programming</option>
+        <option value="literature">📖 Literature</option>
+        <option value="history">🌍 History</option>
+        <option value="arts">🎨 Arts</option>
+      </select>
+      <select id="priceFilter">
+        <option value="">All Prices</option>
+        <option value="0-1000">Under ₹1,000</option>
+        <option value="1000-2000">₹1,000 - ₹2,000</option>
+        <option value="2000-3000">₹2,000 - ₹3,000</option>
+        <option value="3000+">₹3,000+</option>
+      </select>
+      <select id="stockFilter">
+        <option value="">All Stock Status</option>
+        <option value="true">In Stock Only</option>
+        <option value="false">Out of Stock</option>
+      </select>
+      <button class="search-btn" onclick="searchProducts()">🔍 Search</button>
+    </div>
+    
+    <div id="resultsInfo" class="results-info"></div>
+    
+    <div id="productsContainer">
+      <div class="loading">Loading products...</div>
+    </div>
+
+    <div id="pagination" class="pagination" style="display: none;"></div>
+  </div>
+
+  <script>
+    let cart = JSON.parse(localStorage.getItem('smartminds_cart')) || [];
+    let currentPage = 1;
+    let totalPages = 1;
+    let isLoading = false;
+
+    // URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const initialCategory = urlParams.get('category');
+    if (initialCategory) {
+      document.getElementById('categoryFilter').value = initialCategory;
+    }
+
+    function getCategoryEmoji(category) {
+      const emojis = {
+        math: '📐',
+        science: '🔬',
+        programming: '💻',
+        literature: '📖',
+        history: '🌍',
+        arts: '🎨'
+      };
+      return emojis[category] || '📚';
+    }
+
+    function getCategoryName(category) {
+      const names = {
+        math: 'Mathematics',
+        science: 'Science',
+        programming: 'Programming',
+        literature: 'Literature',
+        history: 'History',
+        arts: 'Arts'
+      };
+      return names[category] || 'General';
+    }
+
+    function updateCartCount() {
+      document.getElementById('cartCount').textContent = cart.reduce((sum, item) => sum + item.quantity, 0);
+    }
+
+    function addToCart(book) {
+      if (!book.inStock) {
+        alert('This book is currently out of stock');
+        return;
+      }
+
+      const existingItem = cart.find(item => item._id === book._id);
+      if (existingItem) {
+        existingItem.quantity += 1;
+      } else {
+        cart.push({
+          _id: book._id,
+          title: book.title,
+          price: book.price,
+          image: book.images.cover,
+          quantity: 1
+        });
+      }
+      localStorage.setItem('smartminds_cart', JSON.stringify(cart));
+      updateCartCount();
+      
+      alert(`"${book.title}" added to cart!`);
+    }
+
+    async function loadProducts(page = 1) {
+      if (isLoading) return;
+      isLoading = true;
+
+      const container = document.getElementById('productsContainer');
+      const resultsInfo = document.getElementById('resultsInfo');
+      const pagination = document.getElementById('pagination');
+
+      if (page === 1) {
+        container.innerHTML = '<div class="loading">Loading products...</div>';
+      }
+
+      try {
+        const searchTerm = document.getElementById('searchInput').value;
+        const categoryFilter = document.getElementById('categoryFilter').value;
+        const priceFilter = document.getElementById('priceFilter').value;
+        const stockFilter = document.getElementById('stockFilter').value;
+
+        const params = new URLSearchParams({
+          page: page,
+          limit: 12
+        });
+
+        if (searchTerm) params.append('search', searchTerm);
+        if (categoryFilter) params.append('category', categoryFilter);
+        if (stockFilter) params.append('inStock', stockFilter);
+        
+        // Handle price filter
+        if (priceFilter) {
+          if (priceFilter === '3000+') {
+            params.append('minPrice', '3000');
+          } else {
+            const [min, max] = priceFilter.split('-');
+            if (min) params.append('minPrice', min);
+            if (max) params.append('maxPrice', max);
+          }
+        }
+
+        const response = await fetch(`/api/books?${params}`);
+        const data = await response.json();
+
+        currentPage = parseInt(data.currentPage);
+        totalPages = data.totalPages;
+
+        if (data.books.length === 0) {
+          container.innerHTML = `
+            <div class="no-results">
+              <h3>📭 No books found</h3>
+              <p>Try adjusting your search criteria or browse all categories.</p>
+            </div>
+          `;
+          resultsInfo.textContent = '';
+          pagination.style.display = 'none';
+          return;
+        }
+
+        // Update results info
+        resultsInfo.textContent = `Showing ${data.books.length} of ${data.total} books`;
+
+        // Render products
+        container.innerHTML = `
+          <div class="products-grid">
+            ${data.books.map(book => `
+              <div class="product-card ${!book.inStock ? 'out-of-stock' : ''}">
+                <img src="${book.images.cover || '/placeholder.jpg'}" alt="${book.title}" onerror="this.src='/placeholder.jpg'"/>
+                <div class="product-category">${getCategoryEmoji(book.category)} ${getCategoryName(book.category)}</div>
+                <div class="product-title">${book.title}</div>
+                <div class="product-author">by ${book.author}</div>
+                <div class="product-desc">${book.description}</div>
+                <div class="product-price">₹${book.price.toLocaleString('en-IN')}</div>
+                <div class="product-stock ${book.inStock ? 'in-stock' : 'out-of-stock'}">
+                  ${book.inStock ? `✅ In Stock (${book.stock} available)` : '❌ Out of Stock'}
+                </div>
+                <div class="product-action">
+                  <span class="rating">⭐⭐⭐⭐⭐</span>
+                  <button class="add-to-cart-btn" 
+                          ${!book.inStock ? 'disabled' : ''} 
+                          onclick="addToCart(${JSON.stringify(book).replace(/"/g, '&quot;')})">
+                    ${book.inStock ? 'Add to Cart' : 'Out of Stock'}
+                  </button>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        `;
+
+        // Update pagination
+        if (totalPages > 1) {
+          pagination.style.display = 'flex';
+          pagination.innerHTML = `
+            <button onclick="loadProducts(${currentPage - 1})" ${currentPage <= 1 ? 'disabled' : ''}>
+              ← Previous
+            </button>
+            <span class="current-page">Page ${currentPage} of ${totalPages}</span>
+            <button onclick="loadProducts(${currentPage + 1})" ${currentPage >= totalPages ? 'disabled' : ''}>
+              Next →
+            </button>
+          `;
+        } else {
+          pagination.style.display = 'none';
+        }
+
+      } catch (error) {
+        console.error('Error loading products:', error);
+        container.innerHTML = `
+          <div class="no-results">
+            <h3>⚠️ Error loading products</h3>
+            <p>Please try again later or refresh the page.</p>
+          </div>
+        `;
+        resultsInfo.textContent = '';
+        pagination.style.display = 'none';
+      } finally {
+        isLoading = false;
+      }
+    }
+
+    function searchProducts() {
+      currentPage = 1;
+      loadProducts(1);
+    }
+
+    // Event listeners
+    document.getElementById('searchInput').addEventListener('keyup', function(e) {
+      if (e.key === 'Enter') {
+        searchProducts();
+      }
+    });
+
+    document.getElementById('categoryFilter').addEventListener('change', searchProducts);
+    document.getElementById('priceFilter').addEventListener('change', searchProducts);
+    document.getElementById('stockFilter').addEventListener('change', searchProducts);
+
+    // Initialize
+    updateCartCount();
+    loadProducts(1);
+  </script>
+</body>
+</html>
