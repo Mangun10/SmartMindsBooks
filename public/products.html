@@ -214,8 +214,15 @@
       justify-content: space-between;
       align-items: center;
       margin-top: auto;
+      flex-wrap: wrap;
+      gap: 0.5rem;
     }
-    .add-to-cart-btn {
+    .product-buttons {
+      display: flex;
+      gap: 0.5rem;
+      flex: 1;
+    }
+    .add-to-cart-btn, .preview-btn {
       background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
       color: #fff;
       border: none;
@@ -227,7 +234,21 @@
       transition: all 0.2s ease;
       box-shadow: 0 4px 14px rgba(59, 130, 246, 0.3);
       flex: 1;
-      margin-left: 1rem;
+      text-decoration: none;
+      display: inline-block;
+      text-align: center;
+    }
+    .preview-btn {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+    }
+    .add-to-cart-btn:hover { 
+      background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+      transform: translateY(-2px);
+    }
+    .preview-btn:hover {
+      background: linear-gradient(135deg, #059669 0%, #047857 100%);
+      transform: translateY(-2px);
     }
     .add-to-cart-btn:hover:not(:disabled) { 
       background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
@@ -415,6 +436,89 @@
       
       alert(`"${book.title}" added to cart!`);
     }
+    
+    function openPreview(previewUrl, bookTitle) {
+      if (!previewUrl) {
+        alert('Preview not available for this book');
+        return;
+      }
+      
+      // Convert Google Drive share link to embeddable link
+      let embedUrl = previewUrl;
+      if (previewUrl.includes('drive.google.com/file/d/')) {
+        const fileId = previewUrl.match(/\/d\/([a-zA-Z0-9-_]+)/);
+        if (fileId) {
+          embedUrl = `https://drive.google.com/file/d/${fileId[1]}/preview`;
+        }
+      }
+      
+      // Create modal for preview
+      const modal = document.createElement('div');
+      modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.9);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      `;
+      
+      modal.innerHTML = `
+        <div style="
+          background: #1e293b;
+          border-radius: 12px;
+          padding: 1rem;
+          width: 90%;
+          height: 90%;
+          max-width: 1000px;
+          display: flex;
+          flex-direction: column;
+          border: 1px solid #334155;
+        ">
+          <div style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            color: #f1f5f9;
+          ">
+            <h3 style="margin: 0;">📖 Preview: ${bookTitle}</h3>
+            <button onclick="this.closest('[style*=fixed]').remove()" style="
+              background: #ef4444;
+              color: white;
+              border: none;
+              border-radius: 6px;
+              padding: 0.5rem 1rem;
+              cursor: pointer;
+              font-weight: 600;
+            ">✕ Close</button>
+          </div>
+          <iframe 
+            src="${embedUrl}" 
+            style="
+              width: 100%;
+              height: 100%;
+              border: none;
+              border-radius: 8px;
+            "
+            allowfullscreen>
+          </iframe>
+        </div>
+      `;
+      
+      document.body.appendChild(modal);
+      
+      // Close on outside click
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          modal.remove();
+        }
+      });
+    }
 
     async function loadProducts(page = 1) {
       if (isLoading) return;
@@ -491,11 +595,14 @@
                 </div>
                 <div class="product-action">
                   <span class="rating">⭐⭐⭐⭐⭐</span>
-                  <button class="add-to-cart-btn" 
-                          ${!book.inStock ? 'disabled' : ''} 
-                          onclick="addToCart(${JSON.stringify(book).replace(/"/g, '&quot;')})">
-                    ${book.inStock ? 'Add to Cart' : 'Out of Stock'}
-                  </button>
+                  <div class="product-buttons">
+                    ${book.preview ? `<button class="preview-btn" onclick="openPreview('${book.preview}', '${book.title.replace(/'/g, "\\'")}')">👁️ Preview</button>` : ''}
+                    <button class="add-to-cart-btn" 
+                            ${!book.inStock ? 'disabled' : ''} 
+                            onclick="addToCart(${JSON.stringify(book).replace(/"/g, '&quot;')})">
+                      ${book.inStock ? 'Add to Cart' : 'Out of Stock'}
+                    </button>
+                  </div>
                 </div>
               </div>
             `).join('')}

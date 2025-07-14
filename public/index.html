@@ -201,8 +201,15 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
     }
-    .add-to-cart-btn {
+    .product-buttons {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .add-to-cart-btn, .preview-btn {
       background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
       color: #fff;
       border: none;
@@ -213,9 +220,20 @@
       font-weight: 600;
       transition: all 0.2s ease;
       box-shadow: 0 4px 14px rgba(59, 130, 246, 0.3);
+      text-decoration: none;
+      display: inline-block;
+      text-align: center;
+    }
+    .preview-btn {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
     }
     .add-to-cart-btn:hover { 
       background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+      transform: translateY(-2px);
+    }
+    .preview-btn:hover {
+      background: linear-gradient(135deg, #059669 0%, #047857 100%);
       transform: translateY(-2px);
     }
     .add-to-cart-btn:disabled {
@@ -345,19 +363,112 @@
       window.location.href = `products.html?category=${category}`;
     }
     
+    function openPreview(previewUrl, bookTitle) {
+      if (!previewUrl) {
+        alert('Preview not available for this book');
+        return;
+      }
+      
+      // Convert Google Drive share link to embeddable link
+      let embedUrl = previewUrl;
+      if (previewUrl.includes('drive.google.com/file/d/')) {
+        const fileId = previewUrl.match(/\/d\/([a-zA-Z0-9-_]+)/);
+        if (fileId) {
+          embedUrl = `https://drive.google.com/file/d/${fileId[1]}/preview`;
+        }
+      }
+      
+      // Create modal for preview
+      const modal = document.createElement('div');
+      modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.9);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      `;
+      
+      modal.innerHTML = `
+        <div style="
+          background: #1e293b;
+          border-radius: 12px;
+          padding: 1rem;
+          width: 90%;
+          height: 90%;
+          max-width: 1000px;
+          display: flex;
+          flex-direction: column;
+          border: 1px solid #334155;
+        ">
+          <div style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            color: #f1f5f9;
+          ">
+            <h3 style="margin: 0;">📖 Preview: ${bookTitle}</h3>
+            <button onclick="this.closest('[style*=fixed]').remove()" style="
+              background: #ef4444;
+              color: white;
+              border: none;
+              border-radius: 6px;
+              padding: 0.5rem 1rem;
+              cursor: pointer;
+              font-weight: 600;
+            ">✕ Close</button>
+          </div>
+          <iframe 
+            src="${embedUrl}" 
+            style="
+              width: 100%;
+              height: 100%;
+              border: none;
+              border-radius: 8px;
+            "
+            allowfullscreen>
+          </iframe>
+        </div>
+      `;
+      
+      document.body.appendChild(modal);
+      
+      // Close on outside click
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          modal.remove();
+        }
+      });
+    }
+    
     // Load featured books from API or show sample books
     async function loadFeaturedBooks() {
       try {
+        console.log('Loading featured books...');
         const response = await fetch('/api/books/featured/list');
+        console.log('Response status:', response.status);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const books = await response.json();
+        console.log('Received books:', books);
         
         const container = document.getElementById('featuredProducts');
         
         if (books.length === 0) {
+          console.log('No books found, showing message');
           container.innerHTML = '<div class="loading">No featured books available</div>';
           return;
         }
         
+        console.log(`Rendering ${books.length} books`);
         container.innerHTML = books.map(book => `
           <div class="product-card ${!book.inStock ? 'out-of-stock' : ''}">
             <img src="${book.images.cover || '/placeholder.jpg'}" alt="${book.title}" onerror="this.src='/placeholder.jpg'"/>
@@ -366,10 +477,13 @@
             <div class="product-price">₹${book.price.toLocaleString('en-IN')}</div>
             <div class="product-action">
               <span class="rating">⭐⭐⭐⭐⭐</span>
-              ${!book.inStock ? 
-                '<span class="stock-badge">Out of Stock</span>' : 
-                `<button class="add-to-cart-btn" onclick="addToCart(${JSON.stringify(book).replace(/"/g, '&quot;')})">Add to Cart</button>`
-              }
+              <div class="product-buttons">
+                ${book.preview ? `<button class="preview-btn" onclick="openPreview('${book.preview}', '${book.title.replace(/'/g, "\\'")}')">👁️ Preview</button>` : ''}
+                ${!book.inStock ? 
+                  '<span class="stock-badge">Out of Stock</span>' : 
+                  `<button class="add-to-cart-btn" onclick="addToCart(${JSON.stringify(book).replace(/"/g, '&quot;')})">Add to Cart</button>`
+                }
+              </div>
             </div>
           </div>
         `).join('');
@@ -377,6 +491,7 @@
       } catch (error) {
         console.error('Error loading featured books:', error);
         // Show sample books when API is not available (for static HTML preview)
+        console.log('Showing sample books as fallback');
         showSampleBooks();
       }
     }
@@ -390,6 +505,7 @@
           description: 'Comprehensive guide to calculus and algebra',
           price: 899,
           images: { cover: 'https://via.placeholder.com/200x250/3b82f6/ffffff?text=Math+Book' },
+          preview: 'https://drive.google.com/file/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/view',
           inStock: true
         },
         {
@@ -398,6 +514,7 @@
           description: 'Essential concepts in modern physics',
           price: 799,
           images: { cover: 'https://via.placeholder.com/200x250/10b981/ffffff?text=Physics+Book' },
+          preview: 'https://drive.google.com/file/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/view',
           inStock: true
         },
         {
@@ -406,6 +523,7 @@
           description: 'From basics to advanced web development',
           price: 1299,
           images: { cover: 'https://via.placeholder.com/200x250/f59e0b/ffffff?text=JS+Book' },
+          preview: null, // No preview available
           inStock: false
         }
       ];
@@ -419,10 +537,13 @@
           <div class="product-price">₹${book.price.toLocaleString('en-IN')}</div>
           <div class="product-action">
             <span class="rating">⭐⭐⭐⭐⭐</span>
-            ${!book.inStock ? 
-              '<span class="stock-badge">Out of Stock</span>' : 
-              `<button class="add-to-cart-btn" onclick="addToCart(${JSON.stringify(book).replace(/"/g, '&quot;')})">Add to Cart</button>`
-            }
+            <div class="product-buttons">
+              ${book.preview ? `<button class="preview-btn" onclick="openPreview('${book.preview}', '${book.title.replace(/'/g, "\\'")}')">👁️ Preview</button>` : ''}
+              ${!book.inStock ? 
+                '<span class="stock-badge">Out of Stock</span>' : 
+                `<button class="add-to-cart-btn" onclick="addToCart(${JSON.stringify(book).replace(/"/g, '&quot;')})">Add to Cart</button>`
+              }
+            </div>
           </div>
         </div>
       `).join('');

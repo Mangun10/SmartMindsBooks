@@ -117,8 +117,16 @@
       const username = document.getElementById('username').value;
       const password = document.getElementById('password').value;
       const errorDiv = document.getElementById('errorMessage');
+      const loginBtn = document.querySelector('.login-btn');
+      
+      // Reset error display
+      errorDiv.style.display = 'none';
+      loginBtn.disabled = true;
+      loginBtn.textContent = 'Logging in...';
       
       try {
+        console.log('Attempting login with:', { username }); // Don't log password
+        
         const response = await fetch('/api/auth/login', {
           method: 'POST',
           headers: {
@@ -127,23 +135,38 @@
           body: JSON.stringify({ username, password })
         });
         
+        console.log('Response status:', response.status);
+        console.log('Response headers:', response.headers);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const data = await response.json();
+        console.log('Response data:', data);
         
         if (data.success) {
           localStorage.setItem('adminToken', data.token);
+          console.log('Token stored, redirecting to admin panel');
           window.location.href = '/admin';
         } else {
           errorDiv.style.display = 'block';
-          errorDiv.textContent = data.message;
+          errorDiv.textContent = data.message || 'Login failed';
+          console.error('Login failed:', data.message);
         }
       } catch (error) {
+        console.error('Login error:', error);
         errorDiv.style.display = 'block';
-        errorDiv.textContent = 'Login failed. Please try again.';
+        errorDiv.textContent = `Login failed: ${error.message}`;
+      } finally {
+        loginBtn.disabled = false;
+        loginBtn.textContent = 'Login to Admin Panel';
       }
     });
 
     // Check if already logged in
     if (localStorage.getItem('adminToken')) {
+      console.log('Admin token found, redirecting to admin panel');
       window.location.href = '/admin';
     }
   </script>

@@ -37,6 +37,17 @@ const BookSchema = new mongoose.Schema({
     cover: String,
     gallery: [String]
   },
+  preview: {
+    type: String,
+    trim: true,
+    validate: {
+      validator: function(v) {
+        if (!v) return true; // Allow empty/null values
+        return /^https:\/\/drive\.google\.com\//.test(v);
+      },
+      message: 'Preview must be a valid Google Drive link'
+    }
+  },
   rating: {
     type: Number,
     default: 0,

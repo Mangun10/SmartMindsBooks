@@ -43,6 +43,8 @@ router.get('/', async (req, res) => {
     
     const total = await Book.countDocuments(query);
     
+    console.log(`Books API: Found ${books.length} books out of ${total} total`);
+    
     res.json({
       books,
       totalPages: Math.ceil(total / limit),
@@ -74,11 +76,22 @@ router.get('/:id', async (req, res) => {
 // Get featured books
 router.get('/featured/list', async (req, res) => {
   try {
-    const books = await Book.find({ featured: true, inStock: true })
+    // First try to get featured books
+    let books = await Book.find({ featured: true })
       .limit(6)
       .sort({ createdAt: -1 });
+    
+    // If no featured books, get the latest books
+    if (books.length === 0) {
+      books = await Book.find({})
+        .limit(6)
+        .sort({ createdAt: -1 });
+    }
+    
+    console.log(`Featured books endpoint: Found ${books.length} books`);
     res.json(books);
   } catch (error) {
+    console.error('Featured books error:', error);
     res.status(500).json({ error: error.message });
   }
 });

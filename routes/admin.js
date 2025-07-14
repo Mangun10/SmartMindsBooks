@@ -52,7 +52,8 @@ router.post('/books', verifyAdmin, upload.single('image'), async (req, res) => {
       stock,
       inStock,
       featured,
-      tags
+      tags,
+      preview
     } = req.body;
 
     let imageUrl = '';
@@ -74,6 +75,7 @@ router.post('/books', verifyAdmin, upload.single('image'), async (req, res) => {
       inStock: inStock === 'true',
       featured: featured === 'true',
       tags: tags ? tags.split(',').map(tag => tag.trim()) : [],
+      preview: preview && preview.trim() !== '' ? preview.trim() : undefined,
       images: {
         cover: imageUrl,
         thumbnail: imageUrl

@@ -52,4 +52,5 @@ const verifyAdmin = (req, res, next) => {
   }
 };
 
-module.exports = { router, verifyAdmin };
+module.exports = router;
+module.exports.verifyAdmin = verifyAdmin;
