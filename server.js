@@ -74,10 +74,11 @@ app.get('/', (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 
-// For Vercel deployment, export the app
-if (process.env.VERCEL) {
-  module.exports = app;
-} else {
+// Export for Vercel (always export the app)
+module.exports = app;
+
+// Only start the server if not in Vercel environment
+if (!process.env.VERCEL && !process.env.AWS_LAMBDA_FUNCTION_NAME) {
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
   });
