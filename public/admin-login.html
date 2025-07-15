@@ -139,7 +139,9 @@
         console.log('Response headers:', response.headers);
         
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+          const errorText = await response.text();
+          console.error('Server error response:', errorText);
+          throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
         }
         
         const data = await response.json();
@@ -148,7 +150,7 @@
         if (data.success) {
           localStorage.setItem('adminToken', data.token);
           console.log('Token stored, redirecting to admin panel');
-          window.location.href = '/admin';
+          window.location.href = '/admin.html';
         } else {
           errorDiv.style.display = 'block';
           errorDiv.textContent = data.message || 'Login failed';
