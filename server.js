@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
 require('dotenv').config();
-
+console.log("Server is starting...");
 const app = express();
 
 // Middleware
@@ -46,10 +46,18 @@ app.use(async (req, res, next) => {
   }
 });
 
+// Add middleware to log all requests
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+  next();
+});
+
 // Routes
+console.log('Registering routes...');
 app.use('/api/books', require('./routes/books'));
 app.use('/api/admin', require('./routes/admin'));
 app.use('/api/auth', require('./routes/auth'));
+console.log('Routes registered successfully');
 
 // Serve static files
 app.get('/admin', (req, res) => {

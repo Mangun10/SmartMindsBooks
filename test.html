@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Auth Test</title>
+</head>
+<body>
+    <button onclick="testAuth()">Test Auth Endpoint</button>
+    <button onclick="testLogin()">Test Login</button>
+    <div id="result"></div>
+
+    <script>
+        async function testAuth() {
+            try {
+                const response = await fetch('/api/auth/test');
+                const data = await response.text();
+                document.getElementById('result').innerHTML = `Test Response: ${data}`;
+                console.log('Test response:', data);
+            } catch (error) {
+                document.getElementById('result').innerHTML = `Test Error: ${error.message}`;
+                console.error('Test error:', error);
+            }
+        }
+
+        async function testLogin() {
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username: 'admin', password: 'smartminds123' })
+                });
+                const data = await response.text();
+                document.getElementById('result').innerHTML = `Login Response: ${data}`;
+                console.log('Login response:', data);
+            } catch (error) {
+                document.getElementById('result').innerHTML = `Login Error: ${error.message}`;
+                console.error('Login error:', error);
+            }
+        }
+    </script>
+</body>
+</html>

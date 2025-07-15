@@ -3,8 +3,20 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const router = express.Router();
 
+console.log('Auth route loaded successfully');
+
+// Test endpoint
+router.get('/test', (req, res) => {
+  console.log('Test endpoint hit');
+  res.json({ message: 'Auth route is working!' });
+});
+
 // Simple admin login
 router.post('/login', async (req, res) => {
+  console.log('Login route hit:', req.body);
+  console.log('Expected username:', process.env.ADMIN_USERNAME);
+  console.log('Expected password:', process.env.ADMIN_PASSWORD);
+  console.log('JWT Secret exists:', !!process.env.JWT_SECRET);
   try {
     const { username, password } = req.body;
     
@@ -52,5 +64,5 @@ const verifyAdmin = (req, res, next) => {
   }
 };
 
+router.verifyAdmin = verifyAdmin;
 module.exports = router;
-module.exports.verifyAdmin = verifyAdmin;
